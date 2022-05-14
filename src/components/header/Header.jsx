@@ -13,9 +13,12 @@ import { format } from "date-fns";
 import "./header.css";
 import "react-date-range/dist/styles.css"; // main css file
 import "react-date-range/dist/theme/default.css"; // theme css file
+import { useNavigate } from "react-router-dom";
 
 const Header = ({ type }) => {
+    const navigate = useNavigate();
     const [openDate, setOpenDate] = useState(false);
+    const [destination, setDestination] = useState("");
     const [date, setDate] = useState([
         {
             startDate: new Date(),
@@ -35,6 +38,10 @@ const Header = ({ type }) => {
             ...prev,
             [name]: operation === "i" ? options[name] + 1 : options[name] - 1
         }));
+    };
+
+    const handleSearch = e => {
+        navigate("/hotels", { state: { destination, date, options } });
     };
 
     return (
@@ -91,6 +98,9 @@ const Header = ({ type }) => {
                                     type="text"
                                     placeholder="where are you going?"
                                     className="headerSearchInput"
+                                    onChange={e =>
+                                        setDestination(prev => e.target.value)
+                                    }
                                 />
                             </div>
                             <div className="headerSearchItem">
@@ -119,6 +129,7 @@ const Header = ({ type }) => {
                                         }
                                         moveRangeOnFirstSelection={false}
                                         ranges={date}
+                                        minDate={new Date()}
                                         className="date"
                                     />
                                 )}
@@ -245,7 +256,12 @@ const Header = ({ type }) => {
                                 )}
                             </div>
                             <div className="headerSearchItem">
-                                <button className="headerBtn">Search</button>
+                                <button
+                                    className="headerBtn"
+                                    onClick={handleSearch}
+                                >
+                                    Search
+                                </button>
                             </div>
                         </div>
                     </>
