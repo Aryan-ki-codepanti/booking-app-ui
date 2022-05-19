@@ -6,6 +6,7 @@ import { useState } from "react";
 import { format } from "date-fns";
 import { DateRange } from "react-date-range";
 import SearchItem from "../../components/searchItem/SearchItem";
+import useFetch from "../../hooks/useFetch";
 
 const List = () => {
     const { state } = useLocation();
@@ -14,6 +15,17 @@ const List = () => {
     const [date, setDate] = useState(state.date);
     const [openDate, setOpenDate] = useState(false);
     const [options, setOptions] = useState(state.options);
+    const [min, setMin] = useState(null);
+    const [max, setMax] = useState(null);
+
+
+    const { data, loading, error, reFetch } = useFetch(
+        `${process.env.REACT_APP_API}/hotels?city=${destination}&max=${max || 999}&min=${min | 0}`
+    );
+
+    const handleSearchClick = e => {
+        reFetch();
+    }
 
     return (
         <div>
@@ -52,7 +64,8 @@ const List = () => {
                                     </span>
                                     <input
                                         type="number"
-                                        class="lsOptionInput"
+                                        className="lsOptionInput"
+                                        onChange={e => setMin(prev => e.target.value)}
                                     />
                                 </div>
                                 <div className="lsOptionItem">
@@ -61,14 +74,15 @@ const List = () => {
                                     </span>
                                     <input
                                         type="number"
-                                        class="lsOptionInput"
+                                        className="lsOptionInput"
+                                        onChange={e => setMax(prev => e.target.value)}
                                     />
                                 </div>
                                 <div className="lsOptionItem">
                                     <span className="lsOptionText">Adult</span>
                                     <input
                                         type="number"
-                                        class="lsOptionInput"
+                                        className="lsOptionInput"
                                         placeholder={options.adult}
                                         min={1}
                                     />
@@ -79,7 +93,7 @@ const List = () => {
                                     </span>
                                     <input
                                         type="number"
-                                        class="lsOptionInput"
+                                        className="lsOptionInput"
                                         placeholder={options.children}
                                         min={0}
                                     />
@@ -88,24 +102,21 @@ const List = () => {
                                     <span className="lsOptionText">Room</span>
                                     <input
                                         type="number"
-                                        class="lsOptionInput"
+                                        className="lsOptionInput"
                                         placeholder={options.room}
                                         min={1}
                                     />
                                 </div>
                             </div>
                         </div>
-                        <button> Search </button>
+                        <button onClick={handleSearchClick}> Search </button>
                     </div>
                     <div className="listResult">
-                        <SearchItem />
-                        <SearchItem />
-                        <SearchItem />
-                        <SearchItem />
-                        <SearchItem />
-                        <SearchItem />
-                        <SearchItem />
-                        <SearchItem />
+                        {loading
+                            ? "loading"
+                            : data.map(item => (
+                                  <SearchItem item={item} key={item._id} />
+                              ))}
                     </div>
                 </div>
             </div>
