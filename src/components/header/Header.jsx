@@ -119,7 +119,7 @@ const Header = ({ type }) => {
                                         date[0].endDate,
                                         "MM/dd/yyyy"
                                     )}`}{" "}
-                                    to date
+                                    
                                 </span>
                                 {openDate && (
                                     <DateRange
